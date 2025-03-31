@@ -105,7 +105,7 @@
 
   window.OneSignalDeferred.push(async function(OneSignal) {
     try {
-      const playerId = await OneSignal.Notifications.getPushSubscriptionId();
+      const playerId = await OneSignal.User.PushSubscription.getId();
 
       console.log("Player ID:", playerId);
 
