@@ -105,7 +105,15 @@
 
   window.OneSignalDeferred.push(async function(OneSignal) {
     try {
-      const playerId = await OneSignal.Notifications.getUserId(); // ✅ WORKS in v16
+      // Wait for full initialization
+      await OneSignal.init({
+        appId: "494e3018-0107-483e-b46c-cbe5e81bc464",
+        serviceWorkerPath: '/test/OneSignalSDKWorker.js',
+        serviceWorkerUpdaterPath: '/test/OneSignalSDKUpdaterWorker.js',
+        serviceWorkerParam: { scope: '/test/' },
+      });
+
+      const playerId = await OneSignal.getUserId(); // ✅ This works with default setup
 
       console.log("Player ID:", playerId);
 
