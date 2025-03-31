@@ -101,15 +101,21 @@
     }
     //Get playerID
     function getPlayerId() {
-  window.OneSignalDeferred.push(async function(OneSignal) {
-    const user = await OneSignal.User.get();
-    const playerId = user?.id;
+  console.log("Get Player ID button clicked");
 
-    if (playerId) {
+  window.OneSignalDeferred.push(async function(OneSignal) {
+    try {
+      const playerId = await OneSignal.getUserId(); // ✅ Classic method
       console.log("OneSignal Player ID:", playerId);
-      alert("Your Player ID is:\n" + playerId);
-    } else {
-      alert("Player ID not available yet. Try allowing notifications first.");
+
+      if (playerId) {
+        alert("Your Player ID is:\n" + playerId);
+      } else {
+        alert("Player ID not available yet. Try allowing notifications first.");
+      }
+    } catch (error) {
+      console.error("Error retrieving Player ID:", error);
+      alert("Failed to retrieve Player ID.");
     }
   });
 }
