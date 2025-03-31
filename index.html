@@ -105,8 +105,12 @@
 
   window.OneSignalDeferred.push(async function(OneSignal) {
     try {
-      const playerId = await OneSignal.getUserId(); // ✅ Classic method
-      console.log("OneSignal Player ID:", playerId);
+      const id = await OneSignal.session.getExternalId(); // Try this for external ID
+      const user = await OneSignal.User.get();
+      const playerId = user?.subscriptionId;
+
+      console.log("Fetched OneSignal User:", user);
+      console.log("Player ID:", playerId);
 
       if (playerId) {
         alert("Your Player ID is:\n" + playerId);
