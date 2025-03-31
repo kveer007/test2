@@ -38,21 +38,21 @@
     }
   </style>
 
- <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "494e3018-0107-483e-b46c-cbe5e81bc464",
-      serviceWorkerPath: '/test/OneSignalSDKWorker.js',
-      serviceWorkerUpdaterPath: '/test/OneSignalSDKUpdaterWorker.js',
-      serviceWorkerParam: { scope: '/test/' }, // Must match your site scope
+  <!-- OneSignal SDK -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function (OneSignal) {
+      await OneSignal.init({
+        appId: "494e3018-0107-483e-b46c-cbe5e81bc464",
+        serviceWorkerPath: '/test/OneSignalSDKWorker.js',
+        serviceWorkerUpdaterPath: '/test/OneSignalSDKUpdaterWorker.js',
+        serviceWorkerParam: { scope: '/test/' }, // Must match your site scope
+      });
     });
-  });
-</script>
-
-
+  </script>
 </head>
+
 <body>
   <button onclick="getPlayerId()">Get Player ID</button>
   <h1>Interval Notification Tester</h1>
@@ -99,27 +99,28 @@
           .catch(err => console.error('SW registration failed:', err));
       });
     }
-    //Get playerID
+
+    // Get Player ID
     function getPlayerId() {
-  console.log("Get Player ID button clicked");
+      console.log("Get Player ID button clicked");
 
-  window.OneSignalDeferred.push(async function(OneSignal) {
-    try {
-      const playerId = await OneSignal.User.PushSubscription.getId(); // ✅ This is the one
+      window.OneSignalDeferred.push(async function (OneSignal) {
+        try {
+          const playerId = await OneSignal.User.PushSubscription.getId();
 
-      console.log("Player ID:", playerId);
+          console.log("Player ID:", playerId);
 
-      if (playerId) {
-        alert("Your Player ID is:\n" + playerId);
-      } else {
-        alert("Player ID not available yet. Try allowing notifications first.");
-      }
-    } catch (error) {
-      console.error("Error retrieving Player ID:", error);
-      alert("Failed to retrieve Player ID.");
+          if (playerId) {
+            alert("Your Player ID is:\n" + playerId);
+          } else {
+            alert("Player ID not available yet. Make sure notifications are enabled.");
+          }
+        } catch (error) {
+          console.error("Error retrieving Player ID:", error);
+          alert("Failed to retrieve Player ID.");
+        }
+      });
     }
-  });
-}
   </script>
 </body>
 </html>
