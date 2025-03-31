@@ -106,7 +106,7 @@
 
   window.OneSignalDeferred.push(async function (OneSignal) {
     try {
-      const playerId = OneSignal.User._currentUser?.subscriptionId;
+      const playerId = OneSignal.User._currentUser?.onesignalId;
 
       console.log("Raw User Object:", OneSignal.User._currentUser);
       console.log("Player ID:", playerId);
