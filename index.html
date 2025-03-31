@@ -102,25 +102,26 @@
 
     // Get Player ID
     function getPlayerId() {
-      console.log("Get Player ID button clicked");
+  console.log("Get Player ID button clicked");
 
-      window.OneSignalDeferred.push(async function (OneSignal) {
-        try {
-          const playerId = await OneSignal.User.PushSubscription.getId();
+  window.OneSignalDeferred.push(async function (OneSignal) {
+    try {
+      const playerId = OneSignal.User._currentUser?.subscriptionId;
 
-          console.log("Player ID:", playerId);
+      console.log("Raw User Object:", OneSignal.User._currentUser);
+      console.log("Player ID:", playerId);
 
-          if (playerId) {
-            alert("Your Player ID is:\n" + playerId);
-          } else {
-            alert("Player ID not available yet. Make sure notifications are enabled.");
-          }
-        } catch (error) {
-          console.error("Error retrieving Player ID:", error);
-          alert("Failed to retrieve Player ID.");
-        }
-      });
+      if (playerId) {
+        alert("Your Player ID is:\n" + playerId);
+      } else {
+        alert("Player ID not available yet. Try allowing notifications first.");
+      }
+    } catch (error) {
+      console.error("Error retrieving Player ID:", error);
+      alert("Failed to retrieve Player ID.");
     }
+  });
+}
   </script>
 </body>
 </html>
