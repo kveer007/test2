@@ -54,6 +54,7 @@
 
 </head>
 <body>
+  <button onclick="getPlayerId()">Get Player ID</button>
   <h1>Interval Notification Tester</h1>
   <p>Enter interval time (in seconds):</p>
   <input type="number" id="intervalInput" min="1" placeholder="e.g., 10" />
@@ -98,6 +99,20 @@
           .catch(err => console.error('SW registration failed:', err));
       });
     }
+    //Get playerID
+    function getPlayerId() {
+  window.OneSignalDeferred.push(async function(OneSignal) {
+    const user = await OneSignal.User.get();
+    const playerId = user?.id;
+
+    if (playerId) {
+      console.log("OneSignal Player ID:", playerId);
+      alert("Your Player ID is:\n" + playerId);
+    } else {
+      alert("Player ID not available yet. Try allowing notifications first.");
+    }
+  });
+}
   </script>
 </body>
 </html>
