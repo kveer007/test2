@@ -49,26 +49,36 @@
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
+    OneSignalDeferred.push(async function (OneSignal) {
       await OneSignal.init({
         appId: "494e3018-0107-483e-b46c-cbe5e81bc464",
         serviceWorkerPath: 'OneSignalSDKWorker.js',
         serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
       });
+
+      // Optional: Listen for subscription change
+      OneSignal.on('subscriptionChange', async function (isSubscribed) {
+        if (isSubscribed) {
+          const playerId = await OneSignal.getUserId();
+          console.log("Player ID changed:", playerId);
+        }
+      });
     });
 
     function showPlayerId() {
-      window.OneSignalDeferred.push(async function(OneSignal) {
-        const isPushEnabled = await OneSignal.isPushNotificationsEnabled();
-        if (isPushEnabled) {
+      window.OneSignalDeferred.push(async function (OneSignal) {
+        try {
           const playerId = await OneSignal.getUserId();
+          const el = document.getElementById("playerId");
+
           if (playerId) {
-            document.getElementById("playerId").textContent = `🎯 Your Player ID: ${playerId}`;
+            el.textContent = `🎯 Your Player ID: ${playerId}`;
           } else {
-            document.getElementById("playerId").textContent = `❌ Player ID not available.`;
+            el.textContent = `❌ Player ID not available. Make sure you're subscribed to push notifications.`;
           }
-        } else {
-          document.getElementById("playerId").textContent = `❌ Notifications are not enabled. Please enable them to retrieve your Player ID.`;
+        } catch (error) {
+          console.error("Error fetching Player ID:", error);
+          document.getElementById("playerId").textContent = "❌ Error retrieving Player ID.";
         }
       });
     }
