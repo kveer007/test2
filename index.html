@@ -58,19 +58,17 @@
     });
 
     function showPlayerId() {
-      window.OneSignalDeferred.push(async function (OneSignal) {
-        try {
-          const playerId = await OneSignal.Notifications.getPushSubscriptionId();
-          const el = document.getElementById("playerId");
-
+      window.OneSignalDeferred.push(async function(OneSignal) {
+        const isPushEnabled = await OneSignal.isPushNotificationsEnabled();
+        if (isPushEnabled) {
+          const playerId = await OneSignal.getUserId();
           if (playerId) {
-            el.textContent = `🎯 Your Player ID: ${playerId}`;
+            document.getElementById("playerId").textContent = `🎯 Your Player ID: ${playerId}`;
           } else {
-            el.textContent = `❌ Player ID not available. Make sure notifications are allowed.`;
+            document.getElementById("playerId").textContent = `❌ Player ID not available.`;
           }
-        } catch (error) {
-          console.error("Error fetching Player ID:", error);
-          document.getElementById("playerId").textContent = "❌ Error retrieving Player ID.";
+        } else {
+          document.getElementById("playerId").textContent = `❌ Notifications are not enabled. Please enable them to retrieve your Player ID.`;
         }
       });
     }
