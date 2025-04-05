@@ -100,22 +100,39 @@
       const now = new Date();
       const formattedTime = now.toLocaleTimeString();
 
+      let playerId = null;
+      try {
+        playerId = OneSignal.User.PushSubscription.id;
+      } catch (e) {
+        statusDiv.textContent = "❌ Could not get Player ID.";
+        return;
+      }
+
+      if (!playerId) {
+        statusDiv.textContent = "❌ Player ID not available. Make sure you're subscribed.";
+        return;
+      }
+
+      // Send delay_seconds and playerId to Make.com webhook
       fetch('https://hook.eu2.make.com/ggp1pytqono1330rwmvhwk37j985qh3u', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ delay_seconds })
+        body: JSON.stringify({
+          delay_seconds,
+          playerId
+        })
       })
       .then(res => {
         if (res.ok) {
           statusDiv.textContent = `⏰ Notification will be sent in ${minutes} minute(s) (${delay_seconds} seconds).`;
           timestampDiv.textContent = `🕒 Sent at: ${formattedTime}`;
         } else {
-          statusDiv.textContent = "❌ Failed to send delay to webhook.";
+          statusDiv.textContent = "❌ Failed to send data to webhook.";
           timestampDiv.textContent = "";
         }
       })
       .catch(err => {
-        statusDiv.textContent = "❌ Error sending delay: " + err.message;
+        statusDiv.textContent = "❌ Error sending data: " + err.message;
         timestampDiv.textContent = "";
       });
     }
