@@ -47,39 +47,39 @@
 
   <!-- OneSignal SDK -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
   <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function (OneSignal) {
-      await OneSignal.init({
+    window.OneSignal = window.OneSignal || [];
+    OneSignal.push(function () {
+      OneSignal.init({
         appId: "494e3018-0107-483e-b46c-cbe5e81bc464",
         serviceWorkerPath: 'OneSignalSDKWorker.js',
         serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
       });
 
-      // Optional: Listen for subscription change
-      OneSignal.on('subscriptionChange', async function (isSubscribed) {
+      OneSignal.on('subscriptionChange', function (isSubscribed) {
         if (isSubscribed) {
-          const playerId = await OneSignal.getUserId();
-          console.log("Player ID changed:", playerId);
+          OneSignal.getUserId().then(function (playerId) {
+            console.log("Updated Player ID:", playerId);
+            document.getElementById("playerId").textContent = `🎯 Your Player ID: ${playerId}`;
+          });
         }
       });
     });
 
     function showPlayerId() {
-      window.OneSignalDeferred.push(async function (OneSignal) {
-        try {
-          const playerId = await OneSignal.getUserId();
+      OneSignal.push(function () {
+        OneSignal.getUserId().then(function (playerId) {
           const el = document.getElementById("playerId");
-
           if (playerId) {
             el.textContent = `🎯 Your Player ID: ${playerId}`;
           } else {
-            el.textContent = `❌ Player ID not available. Make sure you're subscribed to push notifications.`;
+            el.textContent = `❌ Player ID not available. Make sure you're subscribed to notifications.`;
           }
-        } catch (error) {
-          console.error("Error fetching Player ID:", error);
+        }).catch(function (error) {
+          console.error("Error getting Player ID:", error);
           document.getElementById("playerId").textContent = "❌ Error retrieving Player ID.";
-        }
+        });
       });
     }
   </script>
