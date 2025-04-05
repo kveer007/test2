@@ -58,10 +58,21 @@
     });
 
     async function showPlayerId() {
-      const OneSignal = window.OneSignal;
-      const user = await OneSignal.User.get();
-      const playerId = user.id;
-      document.getElementById("playerId").textContent = `🎯 Your Player ID: ${playerId}`;
+      window.OneSignalDeferred.push(async function (OneSignal) {
+        try {
+          const playerId = OneSignal.User._currentUser?.onesignalId;
+          const el = document.getElementById("playerId");
+
+          if (playerId) {
+            el.textContent = `🎯 Your Player ID: ${playerId}`;
+          } else {
+            el.textContent = `❌ Player ID not available yet. Make sure notifications are allowed.`;
+          }
+        } catch (e) {
+          console.error("Error retrieving Player ID:", e);
+          document.getElementById("playerId").textContent = "❌ Failed to retrieve Player ID.";
+        }
+      });
     }
   </script>
 </head>
