@@ -6,9 +6,6 @@
   <title>Interval Notification Tester</title>
 
   <link rel="manifest" href="manifest.json" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-  <meta name="apple-mobile-web-app-title" content="Interval Notifier" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <meta name="theme-color" content="#ffffff" />
 
@@ -38,12 +35,12 @@
     }
   </style>
 
-  <!-- OneSignal SDK -->
+  <!-- OneSignal SDK v16 -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(function (OneSignal) {
-      OneSignal.init({
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
         appId: "494e3018-0107-483e-b46c-cbe5e81bc464",
         serviceWorkerPath: 'OneSignalSDKWorker.js',
         serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
@@ -51,22 +48,36 @@
     });
 
     function showPlayerId() {
-      OneSignalDeferred.push(function (OneSignal) {
-        OneSignal.getDeviceState().then(function (deviceState) {
-          const playerId = deviceState.userId;
+      OneSignalDeferred.push(async function(OneSignal) {
+        try {
+          const playerId = OneSignal.User.PushSubscription.id;
           if (playerId) {
             console.log("✅ Player ID:", playerId);
             document.getElementById("playerId").textContent = `🎯 Your Player ID: ${playerId}`;
           } else {
-            document.getElementById("playerId").textContent = "❌ Player ID not available. Make sure you're subscribed.";
+            document.getElementById("playerId").textContent = "❌ Player ID not available. Ensure you're subscribed.";
           }
-        }).catch(function (error) {
-          console.error("Error getting device state:", error);
-          document.getElementById("playerId").textContent = "❌ Failed to fetch Player ID.";
-        });
+        } catch (e) {
+          console.error("Error retrieving Player ID:", e);
+          document.getElementById("playerId").textContent = "❌ Error retrieving Player ID.";
+        }
       });
     }
+  </script>
+</head>
+<body>
+  <h1>Interval Notification Tester</h1>
+  <p>Enter interval time <strong>(in minutes)</strong>:</p>
+  <input type="number" id="intervalInput" min="0.1" max="5" step="0.1" placeholder="e.g., 2" />
+  <button onclick="startNotifications()">Start Notifications</button>
+  <br />
+  <button onclick="showPlayerId()">Show My Player ID</button>
 
+  <div class="status" id="status"></div>
+  <div class="timestamp" id="timestamp"></div>
+  <div class="playerId" id="playerId"></div>
+
+  <script>
     async function startNotifications() {
       const minutes = parseFloat(document.getElementById('intervalInput').value);
       const statusDiv = document.getElementById('status');
@@ -117,17 +128,5 @@
       });
     }
   </script>
-</head>
-<body>
-  <h1>Interval Notification Tester</h1>
-  <p>Enter interval time <strong>(in minutes)</strong>:</p>
-  <input type="number" id="intervalInput" min="0.1" max="5" step="0.1" placeholder="e.g., 2" />
-  <button onclick="startNotifications()">Start Notifications</button>
-  <br />
-  <button onclick="showPlayerId()">Show My Player ID</button>
-
-  <div class="status" id="status"></div>
-  <div class="timestamp" id="timestamp"></div>
-  <div class="playerId" id="playerId"></div>
 </body>
 </html>
