@@ -50,34 +50,32 @@
 
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(function(OneSignal) {
-      OneSignal.init({
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
         appId: "494e3018-0107-483e-b46c-cbe5e81bc464",
         serviceWorkerPath: 'OneSignalSDKWorker.js',
         serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
       });
+
+      // Check if the user is subscribed
+      const isSubscribed = await OneSignal.Notifications.isPushNotificationsEnabled();
+      if (isSubscribed) {
+        const playerId = await OneSignal.User.getId();
+        document.getElementById("playerId").textContent = `🎯 Your Player ID: ${playerId}`;
+      } else {
+        document.getElementById("playerId").textContent = "❌ You are not subscribed to notifications.";
+      }
     });
 
-    function showPlayerId() {
-      OneSignalDeferred.push(async function(OneSignal) {
-        try {
-          const isEnabled = await OneSignal.isPushNotificationsEnabled();
-          if (!isEnabled) {
-            document.getElementById("playerId").textContent = "❌ Notifications are not enabled.";
-            return;
-          }
-
-          const playerId = await OneSignal.User.PushSubscription.getId?.();
-          if (playerId) {
-            document.getElementById("playerId").textContent = `🎯 Your Player ID: ${playerId}`;
-          } else {
-            document.getElementById("playerId").textContent = "❌ Player ID not available yet.";
-          }
-        } catch (e) {
-          console.error("Error fetching Player ID:", e);
-          document.getElementById("playerId").textContent = "❌ Error retrieving Player ID.";
-        }
-      });
+    async function showPlayerId() {
+      const OneSignal = window.OneSignal;
+      const isSubscribed = await OneSignal.Notifications.isPushNotificationsEnabled();
+      if (isSubscribed) {
+        const playerId = await OneSignal.User.getId();
+        document.getElementById("playerId").textContent = `🎯 Your Player ID: ${playerId}`;
+      } else {
+        document.getElementById("playerId").textContent = "❌ You are not subscribed to notifications.";
+      }
     }
 
     async function startNotifications() {
