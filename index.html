@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Interval Notification Tester</title>
 
-  <!-- PWA Meta Tags -->
   <link rel="manifest" href="manifest.json" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
@@ -20,23 +19,17 @@
       background: #f9f9f9;
       text-align: center;
     }
-
-    h1 {
-      color: #333;
-    }
-
+    h1 { color: #333; }
     input, button {
       padding: 10px;
       margin: 10px;
       font-size: 16px;
     }
-
     .status {
       margin-top: 20px;
       color: green;
       font-weight: bold;
     }
-
     .timestamp, .playerId {
       margin-top: 10px;
       font-size: 14px;
@@ -47,35 +40,31 @@
 
   <!-- OneSignal SDK -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
+    OneSignalDeferred.push(function (OneSignal) {
+      OneSignal.init({
         appId: "494e3018-0107-483e-b46c-cbe5e81bc464",
         serviceWorkerPath: 'OneSignalSDKWorker.js',
         serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
       });
-
-      // Check if the user is subscribed
-      const isSubscribed = await OneSignal.Notifications.isPushNotificationsEnabled();
-      if (isSubscribed) {
-        const playerId = await OneSignal.User.getId();
-        document.getElementById("playerId").textContent = `🎯 Your Player ID: ${playerId}`;
-      } else {
-        document.getElementById("playerId").textContent = "❌ You are not subscribed to notifications.";
-      }
     });
 
-    async function showPlayerId() {
-      const OneSignal = window.OneSignal;
-      const isSubscribed = await OneSignal.Notifications.isPushNotificationsEnabled();
-      if (isSubscribed) {
-        const playerId = await OneSignal.User.getId();
-        document.getElementById("playerId").textContent = `🎯 Your Player ID: ${playerId}`;
-      } else {
-        document.getElementById("playerId").textContent = "❌ You are not subscribed to notifications.";
-      }
+    function showPlayerId() {
+      OneSignalDeferred.push(function (OneSignal) {
+        OneSignal.getDeviceState().then(function (deviceState) {
+          const playerId = deviceState.userId;
+          if (playerId) {
+            console.log("✅ Player ID:", playerId);
+            document.getElementById("playerId").textContent = `🎯 Your Player ID: ${playerId}`;
+          } else {
+            document.getElementById("playerId").textContent = "❌ Player ID not available. Make sure you're subscribed.";
+          }
+        }).catch(function (error) {
+          console.error("Error getting device state:", error);
+          document.getElementById("playerId").textContent = "❌ Failed to fetch Player ID.";
+        });
+      });
     }
 
     async function startNotifications() {
